@@ -1,13 +1,11 @@
-//! This module extends GadgetBuilder with an implementation of the Merkle-Damgard construction.
+//! This module extends GadgetBuilder with an implementation of the Merkle-Damgård construction.
 
 use core::borrow::Borrow;
-
-use rand::SeedableRng;
-use rand_chacha::ChaChaRng;
 
 use crate::expression::Expression;
 use crate::field::{Element, Field};
 use crate::gadget_builder::GadgetBuilder;
+use crate::lcg::LCG;
 
 type CompressionFunction<F> = fn(builder: &mut GadgetBuilder<F>,
                                  x: &Expression<F>,
@@ -29,12 +27,11 @@ impl<F: Field> GadgetBuilder<F> {
         compress(self, &current, &Expression::from(len))
     }
 
-    /// Creates a Merkle–Damgård hash function from the given one-way compression function. Uses
-    /// ChaCha20 (seeded with 0) as a source of randomness for the initial value.
-    pub fn merkle_damgard_chacha20(&mut self, blocks: &[Expression<F>],
-                                   compress: CompressionFunction<F>) -> Expression<F> {
-        let mut rng = ChaChaRng::seed_from_u64(0);
-        let initial_value = Element::random(&mut rng);
+    /// Creates a Merkle–Damgård hash function from the given one-way compression function. Uses a
+    /// simple LCG (seeded with zero) as a source of randomness for the initial value.
+    pub fn merkle_damgard_lcg(&mut self, blocks: &[Expression<F>],
+                              compress: CompressionFunction<F>) -> Expression<F> {
+        let initial_value = LCG::new().next_element();
         self.merkle_damgard(initial_value, blocks, compress)
     }
 }

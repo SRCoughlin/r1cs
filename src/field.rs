@@ -8,11 +8,9 @@ use std::ops::{Add, AddAssign, Div, Mul, MulAssign, Neg, Shl, Sub, SubAssign};
 use std::str::FromStr;
 
 use num::bigint::ParseBigIntError;
-use num::bigint::RandBigInt;
 use num::BigUint;
 use num_traits::One;
 use num_traits::Zero;
-use rand::Rng;
 
 /// A prime order field.
 pub trait Field: 'static {
@@ -115,17 +113,6 @@ impl<F: Field> Element<F> {
     /// significant bit of x.
     pub fn bit(&self, i: usize) -> bool {
         ((self.to_biguint() >> i) & BigUint::one()).is_one()
-    }
-
-    /// Return a random field element, uniformly distributed in [0, size()).
-    pub fn random(rng: &mut impl Rng) -> Self {
-        let bits = Self::max_bits();
-        loop {
-            let r = rng.gen_biguint(bits);
-            if r < F::order() {
-                return Self::from(r);
-            }
-        }
     }
 }
 

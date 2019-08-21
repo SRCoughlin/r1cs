@@ -16,6 +16,7 @@ pub mod merkle_damgard;
 pub mod merkle_trees;
 pub mod mimc;
 pub mod permutations;
+pub mod lcg;
 pub mod random_access;
 pub mod sorting;
 pub mod splitting;
